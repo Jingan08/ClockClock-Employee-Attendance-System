@@ -1,66 +1,109 @@
-# ClockClock - Employee Attendance System
+# 🕒 ClockClock - Employee Attendance System
 
-View your app in AI Studio: https://ai.studio/apps/a54cdb0d-49ea-48d3-a8e9-68f18185983a
+Checkout the live demo here: [ClockClock Live App](https://clock-clock-eas.vercel.app)
 
-A secure, enterprise-ready Employee Attendance System with QR and token authentication, featuring role-based views for Employees, Admins, and Super Admins.
+ClockClock is a secure, modern, enterprise-ready **Employee Attendance System (EAS)** featuring dynamic QR-based check-in protocols, advanced Role-Based Access Control (RBAC), and automatic credential dispatch via secure SMTP.
 
-## 🚀 Features
+---
 
-- **Role-Based Access Control (RBAC):** Distinct dashboards and views for Employees, Admins, and Super Admins.
-- **Authentication:** Secure login with QR code generation and parsing (via `qrcode` and `jsqr`), alongside standard credential access.
-- **Offline Sandbox Mode:** All attendance saves, edits, and deletes can run locally on your device without an internet connection.
-- **Firebase Integration:** Seamlessly sync offline data with a live Firebase database once connected.
-- **Dynamic UI:** Smooth animations using `motion/react`, clean responsive design via `Tailwind CSS`, and modern icons provided by `lucide-react`.
+## ✨ Features
 
-## 🛠 Tech Stack
+- **🛡️ Secure Role-Based Dashboards:** Isolated workflows and metrics custom-tailored for:
+  - **Super Admins:** Provision/deprovision administrative accounts, oversee organizational settings, and monitor attendance registers.
+  - **Admins:** Register employees, monitor live check-ins, manage attendance logs, and generate shifts.
+  - **Employees:** Check-in/out and view historical attendance records.
+- **🔄 Dynamic QR Cryptographic Verification:** Auto refreshed QR code that updates every 60 seconds with countdown to prevent token replication.
+- **📧 Automated SMTP Mailer:** Built-in email sender using Gmail SMTP to send system-generated credentials to new staff and administrators.
+- **🎨 Premium Visual Design:** Responsive and modern Glassmorphic UI featuring smooth dynamic micro-animations built using `motion/react`, clean typography, custom high-resolution branding favicons, and beautiful, harmonized tailwind palettes.
+- **🔥 Segregated Database & Security Rules:** Employs advanced Firestore collection isolation schemas (`employees` and `admins` collections) guarded by strict security rules.
 
-- **Frontend:** React 19, TypeScript, Vite
-- **Styling:** Tailwind CSS v4, Lucide React
-- **Backend/Services:** Node.js Express Server, Firebase Firestore, Google Gemini API
-- **Utilities:** `jsqr`, `qrcode`, `motion`
+---
 
-## 🏃‍♂️ Run Locally
+## 🛠️ Technology Stack
 
-**Prerequisites:**  
-- [Node.js](https://nodejs.org/) installed
-- A Firebase project (for live data syncing)
+| Layer | Technologies Used |
+| :--- | :--- |
+| **Frontend Framework** | React 19, TypeScript, Vite |
+| **Styling & UI** | Tailwind CSS v4, Lucide React Icons |
+| **Backend/API** | Node.js, Express Server, tsx |
+| **Security & Database** | Firebase Firestore, Firestore Security Rules |
+| **Email Dispatcher** | Nodemailer with Gmail SMTP Gateway |
+| **Utilities** | `jsqr` (QR reader), `qrcode` (QR generator), `motion` (animations) |
 
-### 1. Install dependencies:
+---
+
+## ⚙️ Environment Configuration
+
+Ensure the following configuration layers are set up in your repository:
+
+### 1. Local Environment Variables (`.env`)
+Create a `.env` file in the root directory:
+```env
+# Google Gemini Integration API Key
+GEMINI_API_KEY="your_gemini_api_key_here"
+
+# Application Hosting URL
+APP_URL="http://localhost:3000"
+
+# Gmail SMTP Credentials for Credentials Dispatch
+# Set SMTP_USER to your Gmail address, e.g., "admin@yourcompany.com"
+# Set SMTP_PASS to your 16-character Gmail App Password (NOT your account password)
+SMTP_USER="your-email@gmail.com"
+SMTP_PASS="xxxx xxxx xxxx xxxx"
+```
+
+### 2. Firebase App Config (`firebase-applet-config.json`)
+Configure your Firebase connection details in `firebase-applet-config.json`:
+```json
+{
+  "projectId": "your-firebase-project-id",
+  "appId": "your-firebase-app-id",
+  "apiKey": "your-firebase-api-key",
+  "authDomain": "your-firebase-auth-domain.firebaseapp.com",
+  "firestoreDatabaseId": "your-firestore-database-id",
+  "storageBucket": "your-firebase-storage-bucket"
+}
+```
+
+---
+
+## 🏃‍♂️ Quick Start Guide
+
+### 1. Install Dependencies
 ```bash
 npm install
 ```
 
-### 2. Environment Setup:
-Create a `.env.local` (using `.env.example` as a template) and add your API keys:
-```env
-GEMINI_API_KEY=your_gemini_api_key_here
-```
-Also ensure your `firebase-applet-config.json` and Firebase configurations are properly set up.
-
-### 3. Run the app:
-Start the development server (runs both Vite frontend and Express server via `tsx`):
+### 2. Run in Development Mode
+Launches the dual Vite frontend server and Express backend server:
 ```bash
 npm run dev
 ```
 
-## 📦 Build & Production
-
-To build the project for production:
+### 3. Build for Production
+Compiles the React application bundle and packages the Express backend with esbuild:
 ```bash
 npm run build
 ```
-This bundles the Vite application and compiles the server code to `dist/server.cjs`.
 
-To start the production server:
+### 4. Launch Production Server
 ```bash
 npm run start
 ```
 
-## 🧹 Utilities
+---
+
+## 🧹 Maintenance Commands
 
 - **Clean build artifacts:** `npm run clean`
-- **Type checking / Linting:** `npm run lint`
+- **TypeScript compilation check:** `npm run lint`
 
-## 🔐 Offline Sandbox vs Live Mode
+---
 
-By default, the application may run in an **Offline Sandbox Mode**, keeping data operations local to your machine. To connect to a live database, ensure you configure your Firebase credentials and enable the **Email/Password** provider within Firebase Authentication settings.
+## 🔒 Advanced Firestore Architecture & Security
+
+The system separates personnel accounts into explicit Firestore collections for superior security:
+- `/employees/{employeeId}`: Holds employee accounts, shift records, and clock times.
+- `/admins/{adminId}`: Holds administrative accounts, credential configurations, and logging data.
+
+Firestore Rules enforce that employees can only view or manage their own data, while only validated administrators can access administrative collections and provision credentials.
