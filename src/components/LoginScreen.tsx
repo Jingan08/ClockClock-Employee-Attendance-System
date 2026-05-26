@@ -82,15 +82,15 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
     switch (role) {
       case UserRole.SUPERADMIN:
         setEmail('superadmin@attendance.com');
-        setPassword('superpassword');
+        setPassword('Superadmin@1234');
         break;
       case UserRole.ADMIN:
         setEmail('admin@attendance.com');
-        setPassword('adminpassword');
+        setPassword('Adminpassword@1234');
         break;
       case UserRole.EMPLOYEE:
         setEmail('employee@attendance.com');
-        setPassword('employeepassword');
+        setPassword('Employee@1234');
         break;
     }
     setError(null);

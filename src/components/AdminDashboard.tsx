@@ -368,7 +368,7 @@ The Management`;
 
   const toggleAdminStatus = async (target: User) => {
     const nextStatus = target.status === AccountStatus.ACTIVE ? AccountStatus.DISABLED : AccountStatus.ACTIVE;
-    await database.changeUserStatus(target.id, nextStatus);
+    await database.changeUserStatus(target.id, target.role, nextStatus);
     fetchSystemEntities();
     onRefreshAllData();
   };
@@ -705,7 +705,7 @@ The Management`;
                             value={emp.status}
                             onChange={async (e) => {
                               const nextStatus = e.target.value as AccountStatus;
-                              await database.changeUserStatus(emp.id, nextStatus);
+                              await database.changeUserStatus(emp.id, emp.role, nextStatus);
                               fetchSystemEntities();
                               onRefreshAllData();
                             }}
@@ -963,7 +963,7 @@ The Management`;
                             value={adm.status}
                             onChange={async (e) => {
                               const nextStatus = e.target.value as AccountStatus;
-                              await database.changeUserStatus(adm.id, nextStatus);
+                              await database.changeUserStatus(adm.id, adm.role, nextStatus);
                               fetchSystemEntities();
                               onRefreshAllData();
                             }}

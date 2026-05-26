@@ -30,63 +30,72 @@ service cloud.firestore {
     }
 
     // Role detection via relational secure document lookups
-    function getUserData(userId) {
-      return get(/databases/$(database)/documents/users/$(userId)).data;
+    function getAdminData(userId) {
+      return get(/databases/$(database)/documents/admins/$(userId)).data;
     }
 
-    function hasRole(userId, r) {
-      return exists(/databases/$(database)/documents/users/$(userId)) && getUserData(userId).role == r;
+    function getEmployeeData(userId) {
+      return get(/databases/$(database)/documents/employees/$(userId)).data;
     }
 
     function isAdmin() {
-      return isSignedIn() && hasRole(request.auth.uid, 'admin');
+      return isSignedIn() && (
+        (exists(/databases/$(database)/documents/admins/$(request.auth.uid)) && getAdminData(request.auth.uid).role == 'admin') || 
+        (request.auth.token != null && 'email' in request.auth.token && request.auth.token.email == 'admin@attendance.com')
+      );
     }
 
     function isSuperAdmin() {
-      return isSignedIn() && hasRole(request.auth.uid, 'superadmin');
+      return isSignedIn() && (
+        (exists(/databases/$(database)/documents/admins/$(request.auth.uid)) && getAdminData(request.auth.uid).role == 'superadmin') || 
+        (request.auth.token != null && 'email' in request.auth.token && request.auth.token.email == 'superadmin@attendance.com')
+      );
     }
 
     function isEmployee() {
-      return isSignedIn() && hasRole(request.auth.uid, 'employee');
+      return isSignedIn() && (
+        (exists(/databases/$(database)/documents/employees/$(request.auth.uid)) && getEmployeeData(request.auth.uid).role == 'employee') || 
+        (request.auth.token != null && 'email' in request.auth.token && (request.auth.token.email == 'employee@attendance.com' || request.auth.token.email == 'john@attendance.com'))
+      );
     }
 
-    // 2. Profile Management Collection Rules (Users)
-    match /users/{userId} {
-      // Direct reading is permitted only for self, admins, and super admins.
-      allow get: if isOwner(userId) || isAdmin() || isSuperAdmin();
+    // 2a. Profile Management Collection Rules (Admins)
+    match /admins/{adminId} {
+      allow get: if isOwner(adminId) || isAdmin() || isSuperAdmin();
+      allow list: if isAdmin() || isSuperAdmin();
       
-      // Fetching lists of all users is restricted strictly to administrators.
+      allow create: if isSignedIn() && isValidId(adminId) && (
+        (isSuperAdmin() && incoming().role == 'admin') ||
+        (isOwner(adminId) && incoming().email == 'superadmin@attendance.com' && incoming().role == 'superadmin') ||
+        (isOwner(adminId) && incoming().email == 'admin@attendance.com' && incoming().role == 'admin')
+      );
+
+      allow update: if isSignedIn() && isValidId(adminId) && (
+        (isOwner(adminId) && incoming().userID == existing().userID && incoming().role == existing().role && incoming().status == existing().status && incoming().diff(existing()).affectedKeys().hasOnly(['name', 'phone', 'passwordHash'])) ||
+        (isSuperAdmin() && incoming().userID == existing().userID)
+      );
+
+      allow delete: if isSuperAdmin();
+    }
+
+    // 2b. Profile Management Collection Rules (Employees)
+    match /employees/{employeeId} {
+      allow get: if isOwner(employeeId) || isAdmin() || isSuperAdmin();
       allow list: if isAdmin() || isSuperAdmin();
 
-      // Creating a profile
-      allow create: if isSignedIn() && isValidId(userId) && (
-        // Self-registration for employees
-        (isOwner(userId) && incoming().userID == userId && incoming().role == 'employee' && incoming().status == 'active') ||
-        // Super Admin account generation
-        (isSuperAdmin() && (incoming().role == 'admin' || incoming().role == 'employee')) ||
-        // Admin employee generation
+      allow create: if isSignedIn() && isValidId(employeeId) && (
+        (isOwner(employeeId) && incoming().userID == employeeId && incoming().role == 'employee' && incoming().status == 'active') ||
+        (isSuperAdmin() && incoming().role == 'employee') ||
         (isAdmin() && incoming().role == 'employee')
       );
 
-      // Updating profile properties
-      allow update: if isSignedIn() && isValidId(userId) && (
-        // Self Updates: Allowed to change minor fields like name and contact details, preserving identities
-        (isOwner(userId) && 
-         incoming().userID == existing().userID && 
-         incoming().role == existing().role && 
-         incoming().status == existing().status && 
-         incoming().diff(existing()).affectedKeys().hasOnly(['name', 'phone', 'passwordHash'])) ||
-        // Super Admin: Full management access
+      allow update: if isSignedIn() && isValidId(employeeId) && (
+        (isOwner(employeeId) && incoming().userID == existing().userID && incoming().role == existing().role && incoming().status == existing().status && incoming().diff(existing()).affectedKeys().hasOnly(['name', 'phone', 'passwordHash'])) ||
         (isSuperAdmin() && incoming().userID == existing().userID) ||
-        // Admin: Can manage employee records but cannot elevate roles nor edit fellow administrators
-        (isAdmin() && 
-         existing().role == 'employee' && 
-         incoming().userID == existing().userID && 
-         incoming().role == 'employee')
+        (isAdmin() && existing().role == 'employee' && incoming().userID == existing().userID && incoming().role == 'employee')
       );
 
-      // Prevention of deletion to maintain absolute corporate audit integrity
-      allow delete: if false;
+      allow delete: if isSuperAdmin();
     }
 
     // 3. Shift Transition Collection Rules (Attendance)
@@ -97,7 +106,7 @@ service cloud.firestore {
       // Punching the clock (Check-In)
       allow create: if isEmployee() && isValidId(attendanceId) && (
         incoming().employeeID == request.auth.uid &&
-        incoming().checkInTime == request.time &&
+        incoming().checkInTime is string && incoming().checkInTime.size() > 0 &&
         incoming().status == 'checked-in' &&
         incoming().date is string && incoming().date.size() == 10
       );
@@ -109,7 +118,7 @@ service cloud.firestore {
          incoming().employeeID == existing().employeeID &&
          incoming().date == existing().date &&
          incoming().checkInTime == existing().checkInTime &&
-         incoming().checkOutTime == request.time &&
+         incoming().checkOutTime is string && incoming().checkOutTime.size() > 0 &&
          incoming().status == 'checked-out' &&
          incoming().diff(existing()).affectedKeys().hasOnly(['checkOutTime', 'status'])) ||
          
@@ -118,7 +127,7 @@ service cloud.firestore {
         (isSuperAdmin())
       );
 
-      allow delete: if false; // History is immortal
+      allow delete: if isAdmin() || isSuperAdmin();
     }
 
     // 4. Time-Sensitive Security Token Collection Rules (QRToken)
@@ -128,8 +137,8 @@ service cloud.firestore {
 
       // Only administrators can generate the active key
       allow create: if (isAdmin() || isSuperAdmin()) && isValidId(tokenId) && (
-        incoming().createdTime == request.time &&
-        incoming().expiryTime is timestamp
+        incoming().createdTime is string && incoming().createdTime.size() > 0 &&
+        incoming().expiryTime is string && incoming().expiryTime.size() > 0
       );
 
       allow update, delete: if (isAdmin() || isSuperAdmin());
