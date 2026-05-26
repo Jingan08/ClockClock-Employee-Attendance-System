@@ -1013,7 +1013,7 @@ The Management`;
                   onClick={() => setDispatchEmail(null)}
                   className="text-xs text-slate-400 hover:text-white cursor-pointer"
                 >
-                  ✕ Close Gate
+                  ✕ Close
                 </button>
               </div>
 
@@ -1056,7 +1056,7 @@ The Management`;
                   id="smtp-modal-ack"
                   className="px-5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs font-sans transition cursor-pointer"
                 >
-                  Acknowledge Dispatch
+                  Acknowledge
                 </button>
               </div>
             </motion.div>
@@ -1075,7 +1075,7 @@ The Management`;
               <div className="flex items-center justify-between border-b pb-3 mb-4">
                 <div>
                   <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider">Attendance Logs History</h3>
-                  <p className="text-xs text-slate-500 mt-1">Showing logged clock records for <span className="font-bold text-indigo-600">{selectedEmployeeForLogs.name}</span> ({selectedEmployeeForLogs.employeeID})</p>
+                  <p className="text-xs text-slate-500 mt-1">Showing attendance for <span className="font-bold text-indigo-600">{selectedEmployeeForLogs.name}</span> ({selectedEmployeeForLogs.employeeID})</p>
                 </div>
                 <button
                   onClick={() => setSelectedEmployeeForLogs(null)}
@@ -1100,7 +1100,7 @@ The Management`;
                     {attendances.filter(a => a.employeeID === selectedEmployeeForLogs.id).length === 0 ? (
                       <tr>
                         <td colSpan={5} className="py-8 text-center text-slate-400 font-semibold bg-slate-50/50">
-                          No registered check-in or check-out cycles logged to port.
+                          No registered attendance found.
                         </td>
                       </tr>
                     ) : (

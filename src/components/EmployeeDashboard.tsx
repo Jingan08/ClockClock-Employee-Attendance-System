@@ -106,7 +106,7 @@ export default function EmployeeDashboard({ user, refreshTrigger }: EmployeeDash
       } catch (err) {
         setFeedback({
           type: 'error',
-          message: 'Unable to start camera. Please verify device camera permissions, or use Simulated Scan below.'
+          message: 'Unable to start camera. Please verify device camera permissions.'
         });
       }
     }
@@ -187,7 +187,7 @@ export default function EmployeeDashboard({ user, refreshTrigger }: EmployeeDash
     };
   }, []);
 
-  // Process manual or simulated credential validation
+  // Process manual credential validation
   const validateAndSubmitAttendance = async (enteredCode: string, inputType: 'QR' | 'Token'): Promise<boolean> => {
     // 1. Concurrency lock
     if (isSubmittingRef.current || isSubmitting) {
@@ -284,14 +284,6 @@ export default function EmployeeDashboard({ user, refreshTrigger }: EmployeeDash
       return;
     }
     validateAndSubmitAttendance(manualToken, 'Token');
-  };
-
-  const simulateCameraQrScan = () => {
-    if (!latestToken) {
-      setFeedback({ type: 'error', message: 'No active dynamic scanner token has been generated.' });
-      return;
-    }
-    validateAndSubmitAttendance(latestToken.qrCodeValue, 'QR');
   };
 
   // Computed metrics
