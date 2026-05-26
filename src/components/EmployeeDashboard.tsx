@@ -463,7 +463,7 @@ export default function EmployeeDashboard({ user, refreshTrigger }: EmployeeDash
                 <div>
                   <span className="font-bold text-indigo-700 flex items-center leading-none">
                     <span className="h-2 w-2 rounded-full bg-emerald-500 mr-2 animate-pulse"></span>
-                    SuccessfulCheck-In Session Since:
+                    Successful Check-In Session Since:
                   </span>
                   <span className="block mt-1 bg-white inline-block px-1.5 py-0.5 rounded border border-slate-200 font-mono text-slate-600 text-[10px]">
                     {new Date(currentShift.checkInTime).toLocaleString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', month: 'short', day: 'numeric' })}

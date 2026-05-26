@@ -237,7 +237,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
                 ) : (
                   <LogIn className="mr-2 h-4 w-4 shrink-0" />
                 )}
-                {isLoading ? 'Verifying Security Auth...' : 'Sign In to Workspace'}
+                {isLoading ? 'Logging In...' : 'Sign In to Workspace'}
               </button>
             </div>
           </form>

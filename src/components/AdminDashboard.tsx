@@ -451,7 +451,7 @@ Super Administrator Office`;
               className={`px-4 py-2 rounded-lg text-xs font-bold transition flex items-center space-x-1.5 cursor-pointer ${activeTab === 'console' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-800'}`}
             >
               <Users className="h-3.5 w-3.5" />
-              <span>Employees Console</span>
+              <span>Manage Employees</span>
             </button>
             <button
               onClick={() => setActiveTab('admins')}
@@ -471,9 +471,8 @@ Super Administrator Office`;
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
               <div>
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest font-sans">Corporate Employees</p>
-                <h3 className="text-lg font-extrabold text-slate-800 mt-1.5 font-sans">{totalActives} Registered</h3>
-                <p className="text-xs text-slate-500 mt-0.5">Under administrator oversight</p>
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest font-sans">Total Employees</p>
+                <h3 className="text-lg font-extrabold text-slate-800 mt-1.5 font-sans">{totalActives}</h3>
               </div>
               <span className="inline-flex p-3 rounded-xl bg-indigo-50 text-indigo-600">
                 <Users className="w-5 h-5 shrink-0" />
@@ -482,9 +481,8 @@ Super Administrator Office`;
 
             <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
               <div>
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest font-sans">Checked-In Workspace</p>
-                <h3 className="text-lg font-extrabold text-emerald-700 mt-1.5 font-sans">{currentCheckedInNow} Active Now</h3>
-                <p className="text-xs text-slate-500 mt-0.5">Real-time terminal shift counts</p>
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest font-sans">Checked-In Employees</p>
+                <h3 className="text-lg font-extrabold text-emerald-700 mt-1.5 font-sans">{currentCheckedInNow}</h3>
               </div>
               <span className="inline-flex p-3 rounded-xl bg-emerald-50 text-emerald-600">
                 <Clock className="w-5 h-5 shrink-0" />
@@ -493,9 +491,8 @@ Super Administrator Office`;
 
             <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
               <div>
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest font-sans">Punctuality Factor</p>
-                <h3 className="text-lg font-extrabold text-slate-800 mt-1.5 font-sans">{punctualRate}% Perfect</h3>
-                <p className="text-xs text-slate-500 mt-0.5">Shifts clocked before 09:00 AM</p>
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest font-sans">Punctuality</p>
+                <h3 className="text-lg font-extrabold text-slate-800 mt-1.5 font-sans">{punctualRate}%</h3>
               </div>
               <span className="inline-flex p-3 rounded-xl bg-indigo-50 text-indigo-600">
                 <TrendingUp className="w-5 h-5 shrink-0" />
@@ -505,8 +502,7 @@ Super Administrator Office`;
             <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
               <div>
                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest font-sans">Portal Operations</p>
-                <h3 className="text-lg font-extrabold text-slate-850 mt-1.5 font-sans">Online Ready</h3>
-                <p className="text-xs text-slate-500 mt-0.5">Dynamic auth rules established</p>
+                <h3 className="text-lg font-extrabold text-slate-850 mt-1.5 font-sans">Online</h3>
               </div>
               <span className="inline-flex p-3 rounded-xl bg-slate-50 text-slate-600">
                 <SlidersHorizontal className="w-5 h-5 shrink-0" />
@@ -522,7 +518,7 @@ Super Administrator Office`;
               <div className="flex items-center justify-between border-b border-slate-800 pb-4 mb-4">
                 <h3 className="text-xs font-bold tracking-tight uppercase text-slate-400 flex items-center">
                   <QrCode className="h-4 w-4 mr-2 text-indigo-400" />
-                  Dual-Channel Token OTP
+                  Attendance Workstation Display
                 </h3>
                 <button
                   onClick={() => triggerNewToken()}
@@ -543,7 +539,7 @@ Super Administrator Office`;
                 )}
                 
                 <div className="text-center mt-3 px-4">
-                  <span className="block text-[10px] uppercase font-bold text-slate-400 tracking-widest">Employee Verification Pin</span>
+                  <span className="block text-[10px] uppercase font-bold text-slate-400 tracking-widest">Employee Verification Token</span>
                   <span className="block text-3xl font-mono font-black text-slate-900 tracking-widest mt-1">
                     {activeToken ? activeToken.tokenValue : '------'}
                   </span>
@@ -559,7 +555,7 @@ Super Administrator Office`;
                   <div className="bg-indigo-500 h-full transition-all duration-1000" style={{ width: `${(timeLeft / 60) * 100}%` }} />
                 </div>
                 <p className="text-[10px] text-slate-400 leading-relaxed font-sans text-center">
-                  OTP values and QR-stream payload rotate automatically every 60s to neutralize terminal replay injection.
+                  QR code and token refreshed automatically every 60 seconds.
                 </p>
               </div>
             </div>
@@ -570,7 +566,7 @@ Super Administrator Office`;
                 <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-5">
                   <h3 className="text-sm font-bold text-slate-800 tracking-tight flex items-center">
                     <PlusCircle className="h-4.5 w-4.5 mr-2 text-indigo-600" />
-                    Register Workspace New Employee
+                    Register New Employee
                   </h3>
                 </div>
 
@@ -587,50 +583,46 @@ Super Administrator Office`;
 
                 <form onSubmit={handleCreateEmployee} className="grid grid-cols-2 gap-4 text-xs font-sans">
                   <div>
-                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Badge ID Key</label>
+                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Employee ID</label>
                     <input
                       type="text"
                       required
                       value={newEmpID}
                       onChange={(e) => setNewEmpID(e.target.value.toUpperCase())}
                       className="w-full px-3 py-2.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-indigo-500 text-slate-800"
-                      placeholder="EMP-402"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Full Name</label>
+                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Employee Full Name</label>
                     <input
                       type="text"
                       required
                       value={newEmpName}
                       onChange={(e) => setNewEmpName(e.target.value)}
                       className="w-full px-3 py-2.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-indigo-500 text-slate-800"
-                      placeholder="Diana Prince"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Corporate Email</label>
+                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Employee Email</label>
                     <input
                       type="email"
                       required
                       value={newEmpEmail}
                       onChange={(e) => setNewEmpEmail(e.target.value)}
                       className="w-full px-3 py-2.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-indigo-500 text-slate-800"
-                      placeholder="diana.prince@corp.com"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Phone Line</label>
+                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Employee Phone</label>
                     <input
                       type="text"
                       required
                       value={newEmpPhone}
                       onChange={(e) => setNewEmpPhone(e.target.value)}
                       className="w-full px-3 py-2.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-indigo-500 text-slate-800"
-                      placeholder="+1 (555) 304-1221"
                     />
                   </div>
 
@@ -642,7 +634,6 @@ Super Administrator Office`;
                       value={newEmpPass}
                       onChange={(e) => setNewEmpPass(e.target.value)}
                       className="w-full px-3 py-2.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-indigo-500 text-slate-800 font-mono"
-                      placeholder="Enter match key or temporary credentials"
                     />
                   </div>
 
@@ -652,7 +643,7 @@ Super Administrator Office`;
                       id="admin-submit-employee-btn"
                       className="w-full py-3 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold tracking-wider uppercase transition cursor-pointer shadow-xs"
                     >
-                      Provision Secure Employee Profile
+                      Register New Employee
                     </button>
                   </div>
                 </form>
@@ -665,7 +656,7 @@ Super Administrator Office`;
             <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-slate-100 pb-4 mb-4 gap-4">
               <h3 className="text-sm font-bold text-slate-800 tracking-tight flex items-center">
                 <Users className="h-4.5 w-4.5 mr-2 text-indigo-600" />
-                Staff Accounts Overview (Device Verification)
+                Staff List
               </h3>
 
               <div className="relative max-w-xs w-full">
@@ -684,10 +675,10 @@ Super Administrator Office`;
               <table className="w-full text-left text-xs" id="admin-employee-table">
                 <thead className="bg-slate-50 text-[10px] font-bold text-slate-500 uppercase tracking-wider border-b border-slate-200">
                   <tr>
-                    <th className="py-3 px-4 animate-none">Staff Key</th>
-                    <th className="py-3 px-4 h-auto">Profile Details</th>
+                    <th className="py-3 px-4 animate-none">Employee ID</th>
+                    <th className="py-3 px-4 h-auto">Employee Details</th>
                     <th className="py-3 px-4 h-auto">Contact Details</th>
-                    <th className="py-3 px-4 text-center">Security Status</th>
+                    <th className="py-3 px-4 text-center">Employee Status</th>
                     <th className="py-3 px-4 text-right">Actions</th>
                   </tr>
                 </thead>
@@ -732,7 +723,7 @@ Super Administrator Office`;
                             onClick={() => setEditingEmployee(emp)}
                             className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 rounded text-[10px] font-bold text-slate-755 transition cursor-pointer"
                           >
-                            Amend
+                            Edit
                           </button>
                           <button
                             type="button"
@@ -755,7 +746,7 @@ Super Administrator Office`;
             <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-slate-100 pb-4 mb-4 gap-4">
               <h3 className="text-sm font-bold text-slate-800 tracking-tight flex items-center">
                 <FileSpreadsheet className="h-4.5 w-4.5 mr-2 text-indigo-600" />
-                Attendance Log Directory Audit
+                Attendance List
               </h3>
 
               <div className="relative max-w-xs w-full">
@@ -774,12 +765,12 @@ Super Administrator Office`;
               <table className="w-full text-left text-xs" id="admin-attendance-records-table">
                 <thead className="bg-slate-50 text-[10px] font-bold text-slate-500 uppercase tracking-wider border-b border-slate-200">
                   <tr>
-                    <th className="py-3 px-4 animate-none">Staff</th>
+                    <th className="py-3 px-4 animate-none">Employee</th>
                     <th className="py-3 px-4 h-auto">Shift Date</th>
-                    <th className="py-3 px-4 h-auto">Check-In</th>
-                    <th className="py-3 px-4 h-auto">Check-Out</th>
-                    <th className="py-3 px-4 h-auto">State</th>
-                    <th className="py-3 px-4 text-right">Amends</th>
+                    <th className="py-3 px-4 h-auto">Check-In Time</th>
+                    <th className="py-3 px-4 h-auto">Check-Out Time</th>
+                    <th className="py-3 px-4 h-auto">Shift Status</th>
+                    <th className="py-3 px-4 text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 text-slate-720 text-slate-700">
@@ -858,10 +849,10 @@ Super Administrator Office`;
           <div className="lg:col-span-1 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
             <h3 className="text-sm font-bold text-slate-800 tracking-tight flex items-center mb-4">
               <PlusCircle className="h-5 w-5 mr-2 text-indigo-600" />
-              Provision Enterprise Administrator
+              Register New Administrators
             </h3>
             <p className="text-xs text-slate-500 leading-relaxed mb-4">
-              Create active corporate administrators. The system automatically creates unique temporary secure passwords and triggers registration alerts via Gmail SMTP.
+              Create new administrator accounts. The system automatically creates temporary passwords and sends registration details to the administrator's email.
             </p>
 
             {adminFormError && (
@@ -878,38 +869,35 @@ Super Administrator Office`;
 
             <form onSubmit={handleRegisterAdmin} className="space-y-4 text-xs font-sans">
               <div>
-                <label className="block font-bold text-slate-500 uppercase tracking-wider mb-1">Full Supervisor Name</label>
+                <label className="block font-bold text-slate-500 uppercase tracking-wider mb-1">Administrator Name</label>
                 <input
                   type="text"
                   required
                   value={newAdminName}
                   onChange={(e) => setNewAdminName(e.target.value)}
                   className="w-full px-3 py-2.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-indigo-500 text-slate-800"
-                  placeholder="Manager Name"
                 />
               </div>
 
               <div>
-                <label className="block font-bold text-slate-500 uppercase tracking-wider mb-1">Manager Corporate Email</label>
+                <label className="block font-bold text-slate-500 uppercase tracking-wider mb-1">Administrator Email</label>
                 <input
                   type="email"
                   required
                   value={newAdminEmail}
                   onChange={(e) => setNewAdminEmail(e.target.value)}
                   className="w-full px-3 py-2.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-indigo-500 text-slate-800"
-                  placeholder="manager@corp.com"
                 />
               </div>
 
               <div>
-                <label className="block font-bold text-slate-500 uppercase tracking-wider mb-1">Phone Line</label>
+                <label className="block font-bold text-slate-500 uppercase tracking-wider mb-1">Administrator Phone Number</label>
                 <input
                   type="text"
                   required
                   value={newAdminPhone}
                   onChange={(e) => setNewAdminPhone(e.target.value)}
                   className="w-full px-3 py-2.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-indigo-500 text-slate-800 animate-none"
-                  placeholder="+1 (555) 543-2211"
                 />
               </div>
 
@@ -918,7 +906,7 @@ Super Administrator Office`;
                 className="w-full py-3 rounded-lg bg-slate-800 hover:bg-slate-900 text-xs font-bold font-sans uppercase tracking-wider text-white transition flex items-center justify-center space-x-2 cursor-pointer shadow-sm"
               >
                 <Sliders className="h-4 w-4 shrink-0 text-indigo-400" />
-                <span>Provision Admin Credentials</span>
+                <span>Register New Administrator</span>
               </button>
             </form>
           </div>
@@ -928,7 +916,7 @@ Super Administrator Office`;
             <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-slate-100 pb-4 mb-4 gap-4">
               <h3 className="text-sm font-bold text-slate-800 tracking-tight flex items-center">
                 <ShieldCheck className="h-5 w-5 mr-2 text-indigo-600 animate-none" />
-                Enterprise Corporate Administrators
+                Administrators List
               </h3>
 
               <div className="relative max-w-xs w-full">
@@ -947,17 +935,17 @@ Super Administrator Office`;
               <table className="w-full text-left text-xs" id="superadmin-admin-table">
                 <thead className="bg-slate-50 text-[10px] font-bold text-slate-500 uppercase tracking-wider border-b border-slate-200">
                   <tr>
-                    <th className="py-3 px-4">Admin Key</th>
-                    <th className="py-3 px-4">Supervisor Details</th>
-                    <th className="py-3 px-4">Corporate Line</th>
-                    <th className="py-3 px-4 text-center">Status</th>
+                    <th className="py-3 px-4">Administrator ID</th>
+                    <th className="py-3 px-4">Administrator Details</th>
+                    <th className="py-3 px-4">Administrator Phone</th>
+                    <th className="py-3 px-4 text-center">Account Status</th>
                     <th className="py-3 px-4 text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 text-slate-700">
                   {filteredAdmins.length === 0 ? (
                     <tr>
-                      <td colSpan={5} className="py-10 text-center text-slate-400 font-semibold bg-slate-50/50">No managers registered at corporate level.</td>
+                      <td colSpan={5} className="py-10 text-center text-slate-400 font-semibold bg-slate-50/50">No administrators registered.</td>
                     </tr>
                   ) : (
                     filteredAdmins.map((adm) => (
@@ -991,7 +979,7 @@ Super Administrator Office`;
                             onClick={() => setEditingAdmin(adm)}
                             className="px-2 py-1 bg-slate-100 hover:bg-slate-200 rounded text-[10px] font-bold text-slate-700 transition cursor-pointer"
                           >
-                            Amend
+                            Edit
                           </button>
                         </td>
                       </tr>
@@ -1049,7 +1037,7 @@ Super Administrator Office`;
                   <div className="bg-emerald-950/40 p-3 rounded-lg border border-emerald-900/60 text-[11px] text-emerald-200 flex items-start space-x-2">
                     <CheckCircle2 className="h-4 w-4 shrink-0 mt-0.5 text-emerald-400" />
                     <span>
-                      <strong>Gmail SMTP transmission complete:</strong> The registration alert email containing the security keys was delivered successfully.
+                      The registration alert email containing the security keys was delivered successfully.
                     </span>
                   </div>
                 ) : (
@@ -1112,7 +1100,7 @@ Super Administrator Office`;
                     {attendances.filter(a => a.employeeID === selectedEmployeeForLogs.id).length === 0 ? (
                       <tr>
                         <td colSpan={5} className="py-8 text-center text-slate-400 font-semibold bg-slate-50/50">
-                          No registered active check-in or check-out cycles logged to port.
+                          No registered check-in or check-out cycles logged to port.
                         </td>
                       </tr>
                     ) : (
@@ -1151,14 +1139,14 @@ Super Administrator Office`;
                 </table>
               </div>
 
-              <div className="flex justify-end pt-4 mt-4 border-t border-slate-100">
+              {/* <div className="flex justify-end pt-4 mt-4 border-t border-slate-100">
                 <button
                   onClick={() => setSelectedEmployeeForLogs(null)}
                   className="px-4 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg text-xs font-bold text-slate-700 transition cursor-pointer"
                 >
                   Dismiss Details
                 </button>
-              </div>
+              </div> */}
             </motion.div>
           </div>
         )}
@@ -1172,7 +1160,7 @@ Super Administrator Office`;
               exit={{ opacity: 0, scale: 0.95 }}
               className="bg-white p-6 rounded-2xl border max-w-md w-full"
             >
-              <h3 className="text-sm font-black text-slate-800 uppercase tracking-widest border-b border-slate-100 pb-3">Amend Staff Profile</h3>
+              <h3 className="text-sm font-black text-slate-800 uppercase tracking-widest border-b border-slate-100 pb-3">Edit Employee Profile</h3>
               <form onSubmit={handleUpdateEmployee} className="space-y-4 mt-4 text-xs font-sans">
                 <div>
                   <label className="block text-slate-500 font-bold uppercase mb-1">Full Name</label>
@@ -1206,7 +1194,7 @@ Super Administrator Office`;
                     type="submit"
                     className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-md font-bold text-white shadow-sm cursor-pointer"
                   >
-                    Commit Profile updates
+                    Update Changes
                   </button>
                 </div>
               </form>
@@ -1223,10 +1211,10 @@ Super Administrator Office`;
               exit={{ opacity: 0, scale: 0.95 }}
               className="bg-white p-6 rounded-2xl border max-w-md w-full"
             >
-              <h3 className="text-sm font-black text-slate-800 uppercase tracking-widest border-b border-slate-100 pb-3">Amend Administrator Details</h3>
+              <h3 className="text-sm font-black text-slate-800 uppercase tracking-widest border-b border-slate-100 pb-3">Edit Administrator Details</h3>
               <form onSubmit={handleUpdateAdminProfile} className="space-y-4 mt-4 text-xs font-sans">
                 <div>
-                  <label className="block text-slate-500 font-bold uppercase mb-1">Full Supervisor Name</label>
+                  <label className="block text-slate-500 font-bold uppercase mb-1">Full Name</label>
                   <input
                     type="text"
                     required
@@ -1257,7 +1245,7 @@ Super Administrator Office`;
                     type="submit"
                     className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-md font-bold text-white shadow-sm cursor-pointer"
                   >
-                    Commit Profile updates
+                    Update Changes
                   </button>
                 </div>
               </form>
@@ -1274,10 +1262,10 @@ Super Administrator Office`;
               exit={{ opacity: 0, scale: 0.95 }}
               className="bg-white p-6 rounded-2xl border max-w-md w-full"
             >
-              <h3 className="text-sm font-black text-slate-800 uppercase tracking-widest border-b border-slate-100 pb-3">Amend Attendance Timestamps</h3>
+              <h3 className="text-sm font-black text-slate-800 uppercase tracking-widest border-b border-slate-100 pb-3">Edit Attendance Timestamps</h3>
               <form onSubmit={handleSaveRecordEdits} className="space-y-4 mt-4 text-xs font-sans">
                 <div>
-                  <label className="block text-slate-500 font-bold uppercase mb-1">Check-In Moment</label>
+                  <label className="block text-slate-500 font-bold uppercase mb-1">Check-In Time</label>
                   <input
                     type="datetime-local"
                     required
@@ -1287,7 +1275,7 @@ Super Administrator Office`;
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-500 font-bold uppercase mb-1">Check-Out Moment</label>
+                  <label className="block text-slate-500 font-bold uppercase mb-1">Check-Out Time</label>
                   <input
                     type="datetime-local"
                     value={editCheckOut}
@@ -1296,7 +1284,7 @@ Super Administrator Office`;
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-505 text-slate-500 font-bold uppercase mb-1">Current Session Lifecycle</label>
+                  <label className="block text-slate-505 text-slate-500 font-bold uppercase mb-1">Current Session Status</label>
                   <select
                     value={editStatus}
                     onChange={(e) => setEditStatus(e.target.value as AttendanceStatus)}
@@ -1318,7 +1306,7 @@ Super Administrator Office`;
                     type="submit"
                     className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-md font-bold text-white shadow-sm cursor-pointer"
                   >
-                    Confirm Edits
+                    Update Changes
                   </button>
                 </div>
               </form>
