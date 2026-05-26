@@ -16,7 +16,7 @@ import {
 } from 'firebase/firestore';
 
 // Seed initial data to populate localStorage if not present
-const SEED_USERS: User[] = [
+const SEED_ADMINS: User[] = [
   {
     id: 'superadmin_uid',
     userID: 'superadmin_uid',
@@ -39,7 +39,10 @@ const SEED_USERS: User[] = [
     status: AccountStatus.ACTIVE,
     adminID: 'ADM-101',
     createdAt: '2026-02-15T09:30:00Z',
-  },
+  }
+];
+
+const SEED_EMPLOYEES: User[] = [
   {
     id: 'employee_uid_204',
     userID: 'employee_uid_204',
@@ -123,8 +126,15 @@ const SEED_ATTENDANCE: Attendance[] = [
 
 // Initialize local variables to act as cached store or core database if Firebase is unconfigured
 function initializeLocalStore() {
-  if (!localStorage.getItem('eas_users')) {
-    localStorage.setItem('eas_users', JSON.stringify(SEED_USERS));
+  if (!localStorage.getItem('eas_admins')) {
+    localStorage.setItem('eas_admins', JSON.stringify(SEED_ADMINS));
+  }
+  if (!localStorage.getItem('eas_employees')) {
+    localStorage.setItem('eas_employees', JSON.stringify(SEED_EMPLOYEES));
+  }
+  // remove old users cache if it exists to keep sandbox clean
+  if (localStorage.getItem('eas_users')) {
+    localStorage.removeItem('eas_users');
   }
   if (!localStorage.getItem('eas_attendance')) {
     localStorage.setItem('eas_attendance', JSON.stringify(SEED_ATTENDANCE));
@@ -150,13 +160,18 @@ initializeLocalStore();
 
 async function getCurrentUserRole(): Promise<string | null> {
   if (auth?.currentUser) {
-    const cachedUsers = JSON.parse(localStorage.getItem('eas_users') || '[]');
+    const cachedAdmins = JSON.parse(localStorage.getItem('eas_admins') || '[]');
+    const cachedEmployees = JSON.parse(localStorage.getItem('eas_employees') || '[]');
+    const cachedUsers = [...cachedAdmins, ...cachedEmployees];
     const cached = cachedUsers.find((u: any) => u.id === auth.currentUser!.uid || u.userID === auth.currentUser!.uid);
     if (cached) {
       return cached.role;
     }
     try {
-      const userDoc = await getDoc(doc(db, 'users', auth.currentUser.uid));
+      let userDoc = await getDoc(doc(db, 'employees', auth.currentUser.uid));
+      if (!userDoc.exists()) {
+        userDoc = await getDoc(doc(db, 'admins', auth.currentUser.uid));
+      }
       if (userDoc.exists()) {
         return userDoc.data()?.role || null;
       }
@@ -186,7 +201,9 @@ export const database = {
           }
           
           // Access cached localUsers to authenticate and bootstrap in Firebase
-          const localUsers = JSON.parse(localStorage.getItem('eas_users') || '[]');
+          const localAdmins = JSON.parse(localStorage.getItem('eas_admins') || '[]');
+          const localEmployees = JSON.parse(localStorage.getItem('eas_employees') || '[]');
+          const localUsers = [...localAdmins, ...localEmployees];
           const seededUser = localUsers.find(
             (u: any) => u.email.toLowerCase() === email.toLowerCase() && u.passwordHash === passwordHash
           );
@@ -211,13 +228,21 @@ export const database = {
               id: firebaseUser.uid,
               userID: firebaseUser.uid,
             };
-            await setDoc(doc(db, 'users', firebaseUser.uid), finalizedProfile);
+            const col = finalizedProfile.role === UserRole.EMPLOYEE ? 'employees' : 'admins';
+            await setDoc(doc(db, col, firebaseUser.uid), finalizedProfile);
 
             // Update local storage representation so UIDs are aligned
-            const updatedLocal = localUsers.map((u: User) => 
-              u.email.toLowerCase() === email.toLowerCase() ? finalizedProfile : u
-            );
-            localStorage.setItem('eas_users', JSON.stringify(updatedLocal));
+            if (finalizedProfile.role === UserRole.EMPLOYEE) {
+              const updatedLocal = localEmployees.map((u: User) => 
+                u.email.toLowerCase() === email.toLowerCase() ? finalizedProfile : u
+              );
+              localStorage.setItem('eas_employees', JSON.stringify(updatedLocal));
+            } else {
+              const updatedLocal = localAdmins.map((u: User) => 
+                u.email.toLowerCase() === email.toLowerCase() ? finalizedProfile : u
+              );
+              localStorage.setItem('eas_admins', JSON.stringify(updatedLocal));
+            }
 
             return finalizedProfile;
           } else {
@@ -227,12 +252,18 @@ export const database = {
 
         // 4. Return user profile from Firestore using real authenticated UID
         const firebaseUser = userCredential.user;
-        const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
+        let userDoc = await getDoc(doc(db, 'employees', firebaseUser.uid));
+        if (!userDoc.exists()) {
+          userDoc = await getDoc(doc(db, 'admins', firebaseUser.uid));
+        }
+
         if (userDoc.exists()) {
           return userDoc.data() as User;
         } else {
           // Fallback if profile doc is missing in Firestore, sync from local cache
-          const localUsers = JSON.parse(localStorage.getItem('eas_users') || '[]');
+          const localAdmins = JSON.parse(localStorage.getItem('eas_admins') || '[]');
+          const localEmployees = JSON.parse(localStorage.getItem('eas_employees') || '[]');
+          const localUsers = [...localAdmins, ...localEmployees];
           const localUser = localUsers.find((u: any) => u.email.toLowerCase() === email.toLowerCase());
           if (localUser) {
             const restoredProfile: User = {
@@ -240,7 +271,8 @@ export const database = {
               id: firebaseUser.uid,
               userID: firebaseUser.uid,
             };
-            await setDoc(doc(db, 'users', firebaseUser.uid), restoredProfile);
+            const col = restoredProfile.role === UserRole.EMPLOYEE ? 'employees' : 'admins';
+            await setDoc(doc(db, col, firebaseUser.uid), restoredProfile);
             return restoredProfile;
           }
           throw new Error("System configuration integrity verification failed: Firestore profile doc missing.");
@@ -251,8 +283,10 @@ export const database = {
       }
     } else {
       // Direct LocalStorage fallback (offline mode)
-      const users = JSON.parse(localStorage.getItem('eas_users') || '[]');
-      const matched = users.find(
+      const localAdmins = JSON.parse(localStorage.getItem('eas_admins') || '[]');
+      const localEmployees = JSON.parse(localStorage.getItem('eas_employees') || '[]');
+      const localUsers = [...localAdmins, ...localEmployees];
+      const matched = localUsers.find(
         (u: any) => u.email.toLowerCase() === email.toLowerCase() && u.passwordHash === passwordHash
       );
       return matched || null;
@@ -262,81 +296,95 @@ export const database = {
   async getUsers(): Promise<User[]> {
     if (isFirebaseConfigured && db) {
       try {
-        const querySnapshot = await getDocs(collection(db, 'users'));
-        if (querySnapshot.empty) {
-          // No user records exist! Seed the Firestore users collection with SEED_USERS
-          for (const user of SEED_USERS) {
-            await setDoc(doc(db, 'users', user.id), user);
+        const empSnapshot = await getDocs(collection(db, 'employees'));
+        const adminSnapshot = await getDocs(collection(db, 'admins'));
+        
+        if (empSnapshot.empty && adminSnapshot.empty) {
+          // No user records exist! Seed the Firestore collections
+          for (const user of SEED_EMPLOYEES) {
+            await setDoc(doc(db, 'employees', user.id), user);
           }
-          const freshSnapshot = await getDocs(collection(db, 'users'));
+          for (const user of SEED_ADMINS) {
+            await setDoc(doc(db, 'admins', user.id), user);
+          }
+          
+          const freshEmp = await getDocs(collection(db, 'employees'));
+          const freshAdmin = await getDocs(collection(db, 'admins'));
           const users: User[] = [];
-          freshSnapshot.forEach((docSnap) => {
-            users.push(docSnap.data() as User);
-          });
+          freshEmp.forEach((docSnap) => users.push(docSnap.data() as User));
+          freshAdmin.forEach((docSnap) => users.push(docSnap.data() as User));
           return users;
         }
+        
         const users: User[] = [];
-        querySnapshot.forEach((docSnap) => {
-          users.push(docSnap.data() as User);
-        });
+        empSnapshot.forEach((docSnap) => users.push(docSnap.data() as User));
+        adminSnapshot.forEach((docSnap) => users.push(docSnap.data() as User));
         return users;
       } catch (err) {
-        handleFirestoreError(err, OperationType.LIST, 'users');
+        handleFirestoreError(err, OperationType.LIST, 'employees/admins');
         return [];
       }
     } else {
-      return JSON.parse(localStorage.getItem('eas_users') || '[]');
+      const localAdmins = JSON.parse(localStorage.getItem('eas_admins') || '[]');
+      const localEmployees = JSON.parse(localStorage.getItem('eas_employees') || '[]');
+      return [...localAdmins, ...localEmployees];
     }
   },
 
   async saveUser(user: User): Promise<void> {
+    const col = user.role === UserRole.EMPLOYEE ? 'employees' : 'admins';
     if (isFirebaseConfigured && db) {
       try {
-        await setDoc(doc(db, 'users', user.id), user);
+        await setDoc(doc(db, col, user.id), user);
       } catch (err) {
-        handleFirestoreError(err, OperationType.WRITE, `users/${user.id}`);
+        handleFirestoreError(err, OperationType.WRITE, `${col}/${user.id}`);
       }
     }
     // Mirror in local-storage
-    const localUsers = JSON.parse(localStorage.getItem('eas_users') || '[]');
+    const lsKey = user.role === UserRole.EMPLOYEE ? 'eas_employees' : 'eas_admins';
+    const localUsers = JSON.parse(localStorage.getItem(lsKey) || '[]');
     const index = localUsers.findIndex((u: User) => u.id === user.id);
     if (index >= 0) {
       localUsers[index] = user;
     } else {
       localUsers.push(user);
     }
-    localStorage.setItem('eas_users', JSON.stringify(localUsers));
+    localStorage.setItem(lsKey, JSON.stringify(localUsers));
   },
 
-  async changeUserStatus(userId: string, status: AccountStatus): Promise<void> {
+  async changeUserStatus(userId: string, role: string, status: AccountStatus): Promise<void> {
+    const col = role === UserRole.EMPLOYEE ? 'employees' : 'admins';
     if (isFirebaseConfigured && db) {
       try {
-        await updateDoc(doc(db, 'users', userId), { status });
+        await updateDoc(doc(db, col, userId), { status });
       } catch (err) {
-        handleFirestoreError(err, OperationType.UPDATE, `users/${userId}`);
+        handleFirestoreError(err, OperationType.UPDATE, `${col}/${userId}`);
       }
     }
-    const localUsers = JSON.parse(localStorage.getItem('eas_users') || '[]');
+    const lsKey = role === UserRole.EMPLOYEE ? 'eas_employees' : 'eas_admins';
+    const localUsers = JSON.parse(localStorage.getItem(lsKey) || '[]');
     const index = localUsers.findIndex((u: User) => u.id === userId);
     if (index >= 0) {
       localUsers[index].status = status;
-      localStorage.setItem('eas_users', JSON.stringify(localUsers));
+      localStorage.setItem(lsKey, JSON.stringify(localUsers));
     }
   },
 
-  async changePassword(userId: string, passwordHash: string): Promise<void> {
+  async changePassword(userId: string, role: string, passwordHash: string): Promise<void> {
+    const col = role === UserRole.EMPLOYEE ? 'employees' : 'admins';
     if (isFirebaseConfigured && db) {
       try {
-        await updateDoc(doc(db, 'users', userId), { passwordHash });
+        await updateDoc(doc(db, col, userId), { passwordHash });
       } catch (err) {
-        handleFirestoreError(err, OperationType.UPDATE, `users/${userId}`);
+        handleFirestoreError(err, OperationType.UPDATE, `${col}/${userId}`);
       }
     }
-    const localUsers = JSON.parse(localStorage.getItem('eas_users') || '[]');
+    const lsKey = role === UserRole.EMPLOYEE ? 'eas_employees' : 'eas_admins';
+    const localUsers = JSON.parse(localStorage.getItem(lsKey) || '[]');
     const index = localUsers.findIndex((u: User) => u.id === userId);
     if (index >= 0) {
       localUsers[index].passwordHash = passwordHash;
-      localStorage.setItem('eas_users', JSON.stringify(localUsers));
+      localStorage.setItem(lsKey, JSON.stringify(localUsers));
     }
   },
 

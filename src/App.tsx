@@ -55,7 +55,7 @@ export default function App() {
     }
 
     try {
-      await database.changePassword(currentUser.id, newPassword);
+      await database.changePassword(currentUser.id, currentUser.role, newPassword);
       setPasswordSuccess('Security passcode updated successfully.');
       setOldPassword('');
       setNewPassword('');

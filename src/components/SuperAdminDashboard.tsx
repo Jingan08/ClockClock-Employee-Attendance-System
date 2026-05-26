@@ -128,7 +128,7 @@ export default function SuperAdminDashboard({ user, onRefreshAllData, refreshTri
 
   const toggleAdminStatus = async (target: User) => {
     const nextStatus = target.status === AccountStatus.ACTIVE ? AccountStatus.DISABLED : AccountStatus.ACTIVE;
-    await database.changeUserStatus(target.id, nextStatus);
+    await database.changeUserStatus(target.id, target.role, nextStatus);
     fetchAdministrators();
     onRefreshAllData();
   };
@@ -253,7 +253,7 @@ export default function SuperAdminDashboard({ user, onRefreshAllData, refreshTri
                         value={adm.status}
                         onChange={async (e) => {
                           const nextStatus = e.target.value as AccountStatus;
-                          await database.changeUserStatus(adm.id, nextStatus);
+                          await database.changeUserStatus(adm.id, adm.role, nextStatus);
                           fetchAdministrators();
                           onRefreshAllData();
                         }}
