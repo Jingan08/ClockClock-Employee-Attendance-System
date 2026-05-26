@@ -42,7 +42,7 @@ async function startServer() {
       });
 
       const info = await transporter.sendMail({
-        from: `"EAS Enterprise Portal" <${smtpUser}>`,
+        from: `"ClockClock EAS" <${smtpUser}>`,
         to,
         subject,
         text: body,

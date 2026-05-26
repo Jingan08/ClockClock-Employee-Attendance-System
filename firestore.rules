@@ -66,6 +66,7 @@ service cloud.firestore {
       
       allow create: if isSignedIn() && isValidId(adminId) && (
         (isSuperAdmin() && incoming().role == 'admin') ||
+        (isOwner(adminId) && incoming().userID == adminId && incoming().role == 'admin' && incoming().status == 'active') ||
         (isOwner(adminId) && incoming().email == 'superadmin@attendance.com' && incoming().role == 'superadmin') ||
         (isOwner(adminId) && incoming().email == 'admin@attendance.com' && incoming().role == 'admin')
       );
