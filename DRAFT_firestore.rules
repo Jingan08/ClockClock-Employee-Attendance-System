@@ -1,0 +1,138 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // 1. Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Global helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // Owner checks
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    // Role detection via relational secure document lookups
+    function getUserData(userId) {
+      return get(/databases/$(database)/documents/users/$(userId)).data;
+    }
+
+    function hasRole(userId, r) {
+      return exists(/databases/$(database)/documents/users/$(userId)) && getUserData(userId).role == r;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && hasRole(request.auth.uid, 'admin');
+    }
+
+    function isSuperAdmin() {
+      return isSignedIn() && hasRole(request.auth.uid, 'superadmin');
+    }
+
+    function isEmployee() {
+      return isSignedIn() && hasRole(request.auth.uid, 'employee');
+    }
+
+    // 2. Profile Management Collection Rules (Users)
+    match /users/{userId} {
+      // Direct reading is permitted only for self, admins, and super admins.
+      allow get: if isOwner(userId) || isAdmin() || isSuperAdmin();
+      
+      // Fetching lists of all users is restricted strictly to administrators.
+      allow list: if isAdmin() || isSuperAdmin();
+
+      // Creating a profile
+      allow create: if isSignedIn() && isValidId(userId) && (
+        // Self-registration for employees
+        (isOwner(userId) && incoming().userID == userId && incoming().role == 'employee' && incoming().status == 'active') ||
+        // Super Admin account generation
+        (isSuperAdmin() && (incoming().role == 'admin' || incoming().role == 'employee')) ||
+        // Admin employee generation
+        (isAdmin() && incoming().role == 'employee')
+      );
+
+      // Updating profile properties
+      allow update: if isSignedIn() && isValidId(userId) && (
+        // Self Updates: Allowed to change minor fields like name and contact details, preserving identities
+        (isOwner(userId) && 
+         incoming().userID == existing().userID && 
+         incoming().role == existing().role && 
+         incoming().status == existing().status && 
+         incoming().diff(existing()).affectedKeys().hasOnly(['name', 'phone', 'passwordHash'])) ||
+        // Super Admin: Full management access
+        (isSuperAdmin() && incoming().userID == existing().userID) ||
+        // Admin: Can manage employee records but cannot elevate roles nor edit fellow administrators
+        (isAdmin() && 
+         existing().role == 'employee' && 
+         incoming().userID == existing().userID && 
+         incoming().role == 'employee')
+      );
+
+      // Prevention of deletion to maintain absolute corporate audit integrity
+      allow delete: if false;
+    }
+
+    // 3. Shift Transition Collection Rules (Attendance)
+    match /attendances/{attendanceId} {
+      allow get: if isSignedIn() && (resource.data.employeeID == request.auth.uid || isAdmin() || isSuperAdmin());
+      allow list: if isSignedIn() && (resource.data.employeeID == request.auth.uid || isAdmin() || isSuperAdmin());
+
+      // Punching the clock (Check-In)
+      allow create: if isEmployee() && isValidId(attendanceId) && (
+        incoming().employeeID == request.auth.uid &&
+        incoming().checkInTime == request.time &&
+        incoming().status == 'checked-in' &&
+        incoming().date is string && incoming().date.size() == 10
+      );
+
+      // Logging Out of shifting (Check-Out) or Admin management adjustments
+      allow update: if isSignedIn() && isValidId(attendanceId) && (
+        // Self-Check-Out transition
+        (resource.data.employeeID == request.auth.uid && 
+         incoming().employeeID == existing().employeeID &&
+         incoming().date == existing().date &&
+         incoming().checkInTime == existing().checkInTime &&
+         incoming().checkOutTime == request.time &&
+         incoming().status == 'checked-out' &&
+         incoming().diff(existing()).affectedKeys().hasOnly(['checkOutTime', 'status'])) ||
+         
+        // Admin manual override and clock-in correction
+        (isAdmin() && incoming().employeeID == existing().employeeID) ||
+        (isSuperAdmin())
+      );
+
+      allow delete: if false; // History is immortal
+    }
+
+    // 4. Time-Sensitive Security Token Collection Rules (QRToken)
+    match /qrtokens/{tokenId} {
+      // Employees must read available configurations to scan and validate
+      allow read: if isSignedIn();
+
+      // Only administrators can generate the active key
+      allow create: if (isAdmin() || isSuperAdmin()) && isValidId(tokenId) && (
+        incoming().createdTime == request.time &&
+        incoming().expiryTime is timestamp
+      );
+
+      allow update, delete: if (isAdmin() || isSuperAdmin());
+    }
+  }
+}

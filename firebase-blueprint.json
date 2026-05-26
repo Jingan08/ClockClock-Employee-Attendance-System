@@ -1,0 +1,139 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "Base entity representing all system accounts (Employees, Admins, SuperAdmins)",
+      "type": "object",
+      "properties": {
+        "userID": {
+          "type": "string",
+          "description": "Unique identifier of the user (synchronized with Firebase Auth UID)"
+        },
+        "name": {
+          "type": "string",
+          "description": "Full name of the user"
+        },
+        "email": {
+          "type": "string",
+          "description": "Email address of the user"
+        },
+        "phone": {
+          "type": "string",
+          "description": "Contact phone number"
+        },
+        "passwordHash": {
+          "type": "string",
+          "description": "SHA-256 hashed password used for secondary portal matching"
+        },
+        "role": {
+          "type": "string",
+          "enum": ["employee", "admin", "superadmin"],
+          "description": "Authorization level in the application"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["active", "disabled"],
+          "description": "Controls whether the user is permitted to interact with the system"
+        },
+        "employeeID": {
+          "type": "string",
+          "description": "Specific badge or system ID for employees (empty for non-employees)"
+        },
+        "adminID": {
+          "type": "string",
+          "description": "Specific admin structural identifier (empty for non-admins)"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp indicating when user account was created"
+        }
+      },
+      "required": ["userID", "name", "email", "role", "status"]
+    },
+    "Attendance": {
+      "title": "Attendance",
+      "description": "Individual record detailing an employee's check-in or check-out state",
+      "type": "object",
+      "properties": {
+        "attendanceID": {
+          "type": "string",
+          "description": "Unique attendance event ID"
+        },
+        "employeeID": {
+          "type": "string",
+          "description": "Reference ID of the employee"
+        },
+        "employeeName": {
+          "type": "string",
+          "description": "Stored check-in employee name for performant indexing"
+        },
+        "date": {
+          "type": "string",
+          "format": "date",
+          "description": "Date of attendance record (YYYY-MM-DD)"
+        },
+        "checkInTime": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Exact moment check-in was registered"
+        },
+        "checkOutTime": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Exact moment check-out was registered, or null if still checked in"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["checked-in", "checked-out"],
+          "description": "Current status of the daily shift"
+        }
+      },
+      "required": ["attendanceID", "employeeID", "date", "checkInTime", "status"]
+    },
+    "QRToken": {
+      "title": "QRToken",
+      "description": "A time-sensitive, single-use security token generated every 1 minute to prevent replay attacks",
+      "type": "object",
+      "properties": {
+        "tokenID": {
+          "type": "string",
+          "description": "Unique identifier for this specific 60s lifecycle code block"
+        },
+        "tokenValue": {
+          "type": "string",
+          "description": "Numerical code (6 characters) entered manually by the employee"
+        },
+        "qrCodeValue": {
+          "type": "string",
+          "description": "Cryptographic payload embedded inside the dynamic QR code"
+        },
+        "createdTime": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Exact moment of creation"
+        },
+        "expiryTime": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Exact moment when this specific credential is automatically expired"
+        }
+      },
+      "required": ["tokenID", "tokenValue", "qrCodeValue", "createdTime", "expiryTime"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "Collection containing details and credentials of all users"
+    },
+    "/attendances/{attendanceId}": {
+      "schema": "Attendance",
+      "description": "Collection tracking historical work shift transitions and durations"
+    },
+    "/qrtokens/{tokenId}": {
+      "schema": "QRToken",
+      "description": "Short-lived active credentials created dynamically and validated server-side"
+    }
+  }
+}

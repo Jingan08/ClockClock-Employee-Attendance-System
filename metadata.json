@@ -1,0 +1,6 @@
+{
+  "name": "Employee Attendance System",
+  "description": "A secure, enterprise-ready Employee Attendance System with QR and token authentication, and role-based views for Employees, Admins, and Super Admins.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
