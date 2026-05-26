@@ -33,7 +33,7 @@ export default async function handler(req, res) {
     });
 
     const info = await transporter.sendMail({
-      from: `"EAS Enterprise Portal" <${smtpUser}>`,
+      from: `"ClockClock EAS" <${smtpUser}>`,
       to,
       subject,
       text: body,
