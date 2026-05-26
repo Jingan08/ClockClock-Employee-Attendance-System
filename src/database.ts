@@ -23,7 +23,7 @@ const SEED_ADMINS: User[] = [
     name: 'Sarah Jenkins',
     email: 'superadmin@attendance.com',
     phone: '+1 (555) 720-3344',
-    passwordHash: 'superpassword', // Simplification for sandbox demo
+    passwordHash: 'Superadmin@1234', // Simplification for sandbox demo
     role: UserRole.SUPERADMIN,
     status: AccountStatus.ACTIVE,
     createdAt: '2026-01-10T08:00:00Z',
@@ -34,7 +34,7 @@ const SEED_ADMINS: User[] = [
     name: 'Robert Carter',
     email: 'admin@attendance.com',
     phone: '+1 (555) 831-4455',
-    passwordHash: 'adminpassword',
+    passwordHash: 'Adminpassword@1234',
     role: UserRole.ADMIN,
     status: AccountStatus.ACTIVE,
     adminID: 'ADM-101',
@@ -49,7 +49,7 @@ const SEED_EMPLOYEES: User[] = [
     name: 'Jane Doe',
     email: 'employee@attendance.com',
     phone: '+1 (555) 432-1100',
-    passwordHash: 'employeepassword',
+    passwordHash: 'Employee@1234',
     role: UserRole.EMPLOYEE,
     status: AccountStatus.ACTIVE,
     employeeID: 'EMP-204',
@@ -126,6 +126,9 @@ const SEED_ATTENDANCE: Attendance[] = [
 
 // Initialize local variables to act as cached store or core database if Firebase is unconfigured
 function initializeLocalStore() {
+  localStorage.removeItem('eas_admins');
+  localStorage.removeItem('eas_employees');
+  
   if (!localStorage.getItem('eas_admins')) {
     localStorage.setItem('eas_admins', JSON.stringify(SEED_ADMINS));
   }
