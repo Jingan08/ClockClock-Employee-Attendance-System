@@ -225,27 +225,27 @@ export default function AdminDashboard({ user, onRefreshAllData, refreshTrigger 
       await database.saveUser(fresh);
 
       // Draft credentials body
-      const emailSubject = "🔐 Secure Staff Badge Credentials Generated";
+      const emailSubject = "🔐 Welcome Onboard - Employee Credentials";
       const emailBody = `Dear ${newEmpName},
 
-Your employee profile has been registered on the Enterprise Attendance System.
+Your employee profile has been registered on the ClockClock Attendance System.
 
-Here are your secure workspace check-in credentials:
-- Employee Badge ID: ${newEmpID}
-- Corporate Email Address: ${newEmpEmail}
-- Temporary Portal Password: ${newEmpPass}
+Here are your secure check-in credentials:
+- Employee ID: ${newEmpID}
+- Email Address: ${newEmpEmail}
+- Temporary Password: ${newEmpPass}
 
-Authorized devices are required. For security protocols, please login and immediately amend your password.
+For security protocols, please login and immediately change your password.
 
 Sincerely,
-Enterprise Administrator Office`;
+The Management`;
 
       // Dispatch via Express/Gmail SMTP proxy
-      setFormSuccess(`Profile created for ${newEmpName}. Initiating SMTP email dispatch...`);
+      setFormSuccess(`Profile created for ${newEmpName}. Creating profile and sending credential email...`);
       const res = await triggerSmtpDispatch(newEmpEmail, emailSubject, emailBody);
 
       if (res && res.success) {
-        setFormSuccess(`Registered profile for ${newEmpName} securely and credential alert dispatched through Gmail SMTP!`);
+        setFormSuccess(`Registered profile for ${newEmpName} and credential email sent successfully!`);
       } else {
         // Fallback or unconfigured trigger alert
         setFormSuccess(`Registered profile for ${newEmpName} securely.`);
@@ -322,23 +322,23 @@ Enterprise Administrator Office`;
       const emailSubject = '🔐 Workspace Admin Credentials Generated';
       const emailBody = `Dear ${newAdminName},
 
-A secure administrator account has been generated for you on the Employee Attendance System.
+An administrator account has been generated for you on the Employee Attendance System.
 
 Your Temporary Login Credentials:
-- Corporate Email: ${newAdminEmail}
+- Admin Email: ${newAdminEmail}
 - Temporary Password: ${randomPassword}
 
-For security compliance, log into your profile dashboard and immediately adjust your system password.
+For security compliance, log into your profile dashboard and immediately change your password.
 
 Sincerely,
-Super Administrator Office`;
+The Management`;
 
       // Trigger actual SMTP send via server endpoint
       const res = await triggerSmtpDispatch(newAdminEmail, emailSubject, emailBody);
 
       setAdminFormSuccess(
         `Registered supervisor "${newAdminName}" successfully. Password: ${randomPassword} ${
-          res && res.success ? "(Email verification dispatched securely via SMTP)" : "(Email dispatch simulated offline)"
+          res && res.success ? "(Email sent successfully)" : "(Email sent failed: Missing SMTP environment variables)"
         }`
       );
 
@@ -812,7 +812,7 @@ Super Administrator Office`;
                               onClick={() => openRecordAmendment(rec)}
                               className="px-2 py-1 bg-stone-100 hover:bg-stone-200 rounded text-[10px] font-bold text-stone-700 transition cursor-pointer inline-block"
                             >
-                              Edit Times
+                              Edit
                             </button>
                             <button
                               type="button"
