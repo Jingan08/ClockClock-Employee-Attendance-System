@@ -314,7 +314,7 @@ export default function EmployeeDashboard({ user, refreshTrigger }: EmployeeDash
             <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-5">
               <h3 className="text-sm font-bold text-slate-800 tracking-tight flex items-center">
                 <Activity className="h-4 w-4 mr-2 text-indigo-600" />
-                Punch Corporate Clock
+                Attendance
               </h3>
               <div className="flex bg-slate-50 p-0.5 rounded-lg border border-slate-200/60">
                 <button
@@ -357,7 +357,7 @@ export default function EmployeeDashboard({ user, refreshTrigger }: EmployeeDash
               {scanMode === 'camera' ? (
                 <div className="space-y-5">
                   <p className="text-xs text-slate-500 leading-relaxed text-center">
-                    To register your attendance stage sync, activate the scanning lens below and present the dynamic QR Code displayed on the manager's office station.
+                    To take your attendance, open the camera below and scan the dynamic QR Code displayed on the office workstation PC.
                   </p>
 
                   {cameraActive ? (
@@ -417,7 +417,7 @@ export default function EmployeeDashboard({ user, refreshTrigger }: EmployeeDash
                       className="w-full flex items-center justify-center space-x-2 py-4 border border-dashed border-slate-300 rounded-xl hover:border-indigo-400 hover:bg-indigo-50/10 text-slate-600 hover:text-indigo-600 font-bold text-xs uppercase tracking-wider transition cursor-pointer"
                     >
                       <Scan className="h-4.5 w-4.5" />
-                      <span>Initialize Scan Hardware</span>
+                      <span>Open Camera</span>
                     </button>
                   )}
 
@@ -425,7 +425,7 @@ export default function EmployeeDashboard({ user, refreshTrigger }: EmployeeDash
               ) : (
                 <form onSubmit={handleManualSubmit} className="space-y-4">
                   <p className="text-xs text-slate-500 leading-relaxed text-center">
-                    Enter the time-sensitive, 6-digit passcode active on the administrator screen. Dynamic credentials automatically refresh every 60 seconds.
+                    If you cannot scan the QR, please enter the 6-digit passcode displayed on the office workstation PC. Code is refreshed every 60 seconds.
                   </p>
 
                   <div>
@@ -450,7 +450,7 @@ export default function EmployeeDashboard({ user, refreshTrigger }: EmployeeDash
                     id="employee-token-submit"
                     className="w-full py-3.5 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs uppercase tracking-wider transition disabled:opacity-55 cursor-pointer shadow-sm"
                   >
-                    {isSubmitting ? 'Verifying Token OTP...' : `Authenticate Code Match`}
+                    {isSubmitting ? 'Verifying Token OTP...' : `Take Attendance`}
                   </button>
                 </form>
               )}
@@ -463,7 +463,7 @@ export default function EmployeeDashboard({ user, refreshTrigger }: EmployeeDash
                 <div>
                   <span className="font-bold text-indigo-700 flex items-center leading-none">
                     <span className="h-2 w-2 rounded-full bg-emerald-500 mr-2 animate-pulse"></span>
-                    Active Check-In Session Since:
+                    SuccessfulCheck-In Session Since:
                   </span>
                   <span className="block mt-1 bg-white inline-block px-1.5 py-0.5 rounded border border-slate-200 font-mono text-slate-600 text-[10px]">
                     {new Date(currentShift.checkInTime).toLocaleString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', month: 'short', day: 'numeric' })}
@@ -475,7 +475,7 @@ export default function EmployeeDashboard({ user, refreshTrigger }: EmployeeDash
             <div className="max-w-md mx-auto w-full mt-6">
               <div className="p-4 rounded-xl bg-amber-50/40 border border-amber-100 flex items-center text-xs text-amber-800 font-semibold">
                 <AlertCircle className="h-4 w-4 mr-2 shrink-0" />
-                <span>Shift currently clock closed. Ready for new Check-In.</span>
+                <span>No active shift found. Ready for new Check-in.</span>
               </div>
             </div>
           )}
@@ -486,12 +486,12 @@ export default function EmployeeDashboard({ user, refreshTrigger }: EmployeeDash
       <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
         <h3 className="text-sm font-bold text-slate-800 tracking-tight mb-4 flex items-center">
           <Calendar className="h-4 w-4 mr-2 text-indigo-600" />
-          Shift Entry History Audit
+          Attendance History
         </h3>
 
         {attendances.length === 0 ? (
           <div className="text-center py-10 bg-slate-50 border border-dashed rounded-xl border-slate-200 text-slate-400 text-xs font-semibold">
-            No shifts recorded for this account. Submit a scan or enter a token to begin logging.
+            No attendance recorded for this account. Submit a scan or enter a code to begin logging.
           </div>
         ) : (
           <div className="overflow-x-auto rounded-xl border border-slate-200">
@@ -502,7 +502,7 @@ export default function EmployeeDashboard({ user, refreshTrigger }: EmployeeDash
                   <th className="py-3 px-4">Check-In</th>
                   <th className="py-3 px-4">Check-Out</th>
                   <th className="py-3 px-4">Duration</th>
-                  <th className="py-3 px-4 text-center">Lifecycle Status</th>
+                  <th className="py-3 px-4 text-center">Status</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-slate-705 text-slate-700">

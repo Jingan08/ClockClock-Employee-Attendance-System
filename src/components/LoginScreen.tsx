@@ -245,7 +245,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
 
         <div className="border-t border-slate-200 pt-6">
           <p className="text-center text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4">
-            Sandbox Fast-Track Login
+            Sandbox Testing Accounts
           </p>
           <div className="grid grid-cols-3 gap-2">
             <button

@@ -34,14 +34,14 @@ export default function Navbar({ user, onLogout, onChangePasswordClick }: Navbar
               </svg>
             </div>
             <span className="text-xl font-bold tracking-tight text-slate-800">
-              SyncClock <span className="text-indigo-600 font-extrabold">v2.0</span>
+              ClockClock <span className="text-indigo-600 font-extrabold">v1.0</span>
             </span>
           </div>
 
           <div className="flex items-center space-x-6">
             <div className="hidden md:flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-              <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">System Live: Firebase Connected</span>
+              <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">System Status: Database Connected</span>
             </div>
             
             <div className="hidden md:block h-8 w-px bg-slate-200"></div>
@@ -92,7 +92,7 @@ export default function Navbar({ user, onLogout, onChangePasswordClick }: Navbar
                           className="w-full text-left px-4 py-2 text-xs text-slate-700 hover:bg-slate-50 hover:text-indigo-600 flex items-center transition"
                         >
                           <Key className="h-3.5 w-3.5 mr-2" />
-                          Modify Portal Password
+                          Change Password
                         </button>
                       )}
                       
@@ -106,7 +106,7 @@ export default function Navbar({ user, onLogout, onChangePasswordClick }: Navbar
                         className="w-full text-left px-4 py-2 text-xs text-rose-600 hover:bg-rose-50 hover:text-rose-700 flex items-center font-bold transition border-t border-slate-50"
                       >
                         <LogOut className="h-3.5 w-3.5 mr-2" />
-                        Log Out Workspace
+                        Log Out
                       </button>
                     </div>
                   </div>
