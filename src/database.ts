@@ -459,6 +459,16 @@ export const database = {
 
   async registerCheckIn(employee: User): Promise<Attendance> {
     const now = new Date();
+    const all = await this.getEmployeeAttendance(employee.id);
+    if (all.length > 0) {
+      const latest = all[0];
+      const lastActionTimeStr = latest.status === AttendanceStatus.CHECKED_IN ? latest.checkInTime : (latest.checkOutTime || latest.checkInTime);
+      const lastActionTime = new Date(lastActionTimeStr).getTime();
+      if (Math.abs(now.getTime() - lastActionTime) < 60000) {
+        throw new Error('Duplicate scan detected. Please wait 1 minute between scans.');
+      }
+    }
+
     const attendance: Attendance = {
       id: `att_${employee.id}_${now.getTime()}`,
       attendanceID: `att_${employee.id}_${now.getTime()}`,
@@ -489,6 +499,11 @@ export const database = {
     const record = all.find(a => a.id === attendanceId);
     if (!record) {
       throw new Error('Attendance record not found');
+    }
+
+    const lastActionTime = new Date(record.checkInTime).getTime();
+    if (Math.abs(now.getTime() - lastActionTime) < 60000) {
+      throw new Error('Duplicate scan detected. Please wait 1 minute between scans.');
     }
 
     record.checkOutTime = now.toISOString();

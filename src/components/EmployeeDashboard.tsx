@@ -266,9 +266,10 @@ export default function EmployeeDashboard({ user, refreshTrigger }: EmployeeDash
       fetchEmployeeRecords();
       return true;
     } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'A storage gate validation failure rejected the transaction.';
       setFeedback({
         type: 'error',
-        message: 'A storage gate validation failure rejected the transaction.'
+        message: errorMessage
       });
       return false;
     } finally {

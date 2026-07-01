@@ -4,7 +4,6 @@ import LoginScreen from './components/LoginScreen';
 import Navbar from './components/Navbar';
 import EmployeeDashboard from './components/EmployeeDashboard';
 import AdminDashboard from './components/AdminDashboard';
-import SuperAdminDashboard from './components/SuperAdminDashboard';
 import { database } from './database';
 import { enableFirebaseMode } from './firebase';
 import { KeyRound, ShieldAlert, Sparkles, CheckCircle2 } from 'lucide-react';
